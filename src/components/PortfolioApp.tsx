@@ -246,6 +246,8 @@ export default function PortfolioApp({ data, fonts }: Props) {
         aria-label="3D world: a paper boat sailing between five portfolio islands. Use the island navigation or the Simple view button to read everything without steering."
       />
 
+      <div className="vignette" aria-hidden="true" />
+
       {/* Everything that floats over the 3D world */}
       <div id="ui" inert={!inWorld || simple}>
         <header className="hud">

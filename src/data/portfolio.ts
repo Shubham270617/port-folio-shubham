@@ -15,6 +15,16 @@ export interface Job {
   period: string;
   location?: string;
   points: string[];
+  /** Which looping animated clip to show for this role. */
+  clip?: "agents" | "pos" | "tools" | "health" | "review";
+  /** Optional real video (e.g. "/clips/qss.mp4" in the public folder). Replaces the animated clip. */
+  video?: string;
+}
+
+export interface Service {
+  icon: "web" | "mobile" | "ai" | "cloud";
+  title: string;
+  text: string;
 }
 
 export interface Project {
@@ -27,7 +37,7 @@ export interface Project {
   live: string;
   github: string;
   /** Which illustrated mock-up to show on the project card. */
-  preview?: "rtg" | "scrum" | "jarvis" | "cv" | "dam";
+  preview?: "rtg" | "scrum" | "jarvis" | "cv" | "dam" | "game" | "company";
   /** Optional real screenshot (e.g. "/projects/rtg.png" in the public folder). Replaces the mock-up. */
   image?: string;
 }
@@ -40,6 +50,7 @@ export interface Portfolio {
   intro: string;
   resumeUrl: string;
   highlights: { value: string; label: string }[];
+  services: Service[];
   experience: Job[];
   projects: Project[];
   skills: { strongest: string[]; also: string[] };
@@ -55,7 +66,7 @@ export const portfolio: Portfolio = {
   availability: "", // optional, e.g. "Open to remote roles". Left empty: not stated on the résumé.
 
   intro:
-    "Full-stack engineer with 4+ years building production web and mobile apps with React, React Native, Next.js and Node.js. " +
+    "Full-stack engineer with 5 years of experience building production web and mobile apps with React, React Native, Next.js and Node.js. " +
     "Right now I build agentic AI systems with LangGraph and a multi-module financial platform at QSS Technosoft. " +
     "Before that I engineered the Rista POS platform at DotPe.",
 
@@ -64,9 +75,17 @@ export const portfolio: Portfolio = {
 
   // Three headline numbers shown on About Island.
   highlights: [
-    { value: "4+", label: "years shipping production apps" },
+    { value: "5", label: "years shipping production apps" },
     { value: "500+", label: "athletes on the RTG site" },
     { value: "2", label: "YES Awards for excellence" }
+  ],
+
+  // "What I do", shown on About Island and in the simple view.
+  services: [
+    { icon: "web", title: "Web apps", text: "React and Next.js front ends with Node.js, GraphQL and REST back ends." },
+    { icon: "mobile", title: "Mobile apps", text: "React Native apps for Android and iOS, built to keep working offline." },
+    { icon: "ai", title: "Agentic AI", text: "LangGraph agent workflows using Claude, OpenAI and local Ollama models." },
+    { icon: "cloud", title: "Cloud and delivery", text: "AWS deployments with CI/CD pipelines on GitHub Actions." }
   ],
 
   // Newest first. The first entry is the glowing stone at the top of the staircase.
@@ -74,6 +93,7 @@ export const portfolio: Portfolio = {
     {
       company: "QSS Technosoft Pvt. Ltd.",
       short: "QSS Technosoft",
+      clip: "agents",
       role: "Senior Software Engineer",
       period: "Jun 2026 – Present",
       location: "India",
@@ -87,6 +107,7 @@ export const portfolio: Portfolio = {
     {
       company: "NeoSoft · Client: DotPe (Rista POS)",
       short: "NeoSoft · DotPe",
+      clip: "pos",
       role: "Senior Software Engineer",
       period: "Dec 2025 – Jun 2026",
       location: "India",
@@ -101,6 +122,7 @@ export const portfolio: Portfolio = {
     {
       company: "RWS Group (USA)",
       short: "RWS Group",
+      clip: "tools",
       role: "Full Stack Developer",
       period: "Aug 2024 – Dec 2025",
       location: "Remote, India",
@@ -114,6 +136,7 @@ export const portfolio: Portfolio = {
     {
       company: "Magneto Pvt. Ltd.",
       short: "Magneto",
+      clip: "health",
       role: "Associate – Junior Full Stack Developer",
       period: "Aug 2022 – Aug 2024",
       location: "Bihar, India",
@@ -126,6 +149,7 @@ export const portfolio: Portfolio = {
     {
       company: "Programming Classes",
       short: "Programming Classes",
+      clip: "review",
       role: "Full Stack Developer Intern",
       period: "Jan 2022 – Jun 2022",
       location: "Patna, Bihar",
@@ -144,8 +168,8 @@ export const portfolio: Portfolio = {
       when: "2026 · Freelance",
       desc: "Complete website for an endurance sports community (cycling, running, swimming, triathlon): 500+ athletes across 8+ Indian cities, with events, challenges and community pages.",
       stack: ["Next.js", "React", "PostgreSQL", "Supabase", "AWS"],
-      live: "#",
-      github: "#"
+      live: "https://rideteagupshup.com/",
+      github: "https://github.com/Shubham270617/ride-to-gupsup"
     },
     {
       name: "AI Scrum Master",
@@ -164,8 +188,8 @@ export const portfolio: Portfolio = {
       when: "Oct 2025",
       desc: "AI desktop assistant on the OpenAI API with natural-language task execution, real-time response streaming and a robotics-inspired UI.",
       stack: ["MERN", "React Native", "OpenAI API", "Next.js"],
-      live: "#",
-      github: "#"
+      live: "https://aiclock.vercel.app",
+      github: "https://github.com/Shubham270617/AI_Clock"
     },
     {
       name: "CV Builder · AI Résumé Generator",
@@ -174,8 +198,28 @@ export const portfolio: Portfolio = {
       when: "Jul 2025",
       desc: "AI-powered résumé platform that uses prompt engineering for content suggestions. UI/UX designed and shipped independently.",
       stack: ["MERN", "OpenAI API", "MongoDB"],
-      live: "#",
-      github: "#"
+      live: "https://cv-builder-eight-coral.vercel.app",
+      github: "https://github.com/Shubham270617/cv_builder"
+    },
+    {
+      name: "Spidy Gaming · Gaming Website",
+      short: "Spidy Gaming",
+      preview: "game",
+      when: "Gaming landing site",
+      desc: "Animated gaming website with GSAP-driven sections (hero, about, features, story, contact) plus login and sign-up pages.",
+      stack: ["React", "GSAP", "Tailwind CSS", "React Router", "React Hook Form"],
+      live: "https://gaming-website-eta-nine.vercel.app",
+      github: "https://github.com/Shubham270617/gaming_website"
+    },
+    {
+      name: "Fonetricks Website",
+      short: "Fonetricks",
+      preview: "company",
+      when: "Company website",
+      desc: "Company website for Fonetricks, which provides Unified Communication, Agentic AI and custom CRM/ERP solutions.",
+      stack: ["React", "GSAP"],
+      live: "https://fonetricks.com/",
+      github: "https://github.com/ShivaniShirke1219/FonetricksWebsite"
     },
     {
       name: "Digital Asset Management System",

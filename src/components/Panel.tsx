@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type PointerEvent, type RefObject } from "
 import gsap from "gsap";
 import type { Portfolio } from "@/data/portfolio";
 import { SECTIONS, sectionOf, type SectionId } from "@/world/layout";
-import { Background, ContactBlock, ProjectCard, ResumeBtn, Skills, Stats, Timeline } from "./sections";
+import { Background, ContactBlock, ProjectCard, ResumeBtn, Services, Skills, Stats, Timeline } from "./sections";
 
 interface Props {
   data: Portfolio;
@@ -101,6 +101,8 @@ export default function Panel({ data, id, open, project, reduceMotion, panelRef,
             <p>{data.intro}</p>
             {data.availability && <p className="chip strong">{data.availability}</p>}
             <Stats data={data} />
+            <h3>What I do</h3>
+            <Services data={data} />
             <Background data={data} />
             <div className="link-row">
               <ResumeBtn data={data} cls="btn sm primary" />
@@ -110,7 +112,7 @@ export default function Panel({ data, id, open, project, reduceMotion, panelRef,
         )}
         {id === "experience" && (
           <>
-            <p className="sub">One stepping stone per role. The glowing one on top is where I am now.</p>
+            <p className="sub">One stepping stone per role. The glowing one on top is where I am now. Tap a clip to pause it.</p>
             <Timeline data={data} />
           </>
         )}

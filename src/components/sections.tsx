@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { Portfolio, Project } from "@/data/portfolio";
+import ExperienceClip from "./ExperienceClip";
 import ProjectPreview from "./ProjectPreview";
 
 export const isReal = (url?: string) => !!url && url !== "#";
@@ -13,6 +14,32 @@ export const DownloadIcon = () => (
 export const MailIcon = () => (
   <svg className="ico" viewBox="0 0 24 24" aria-hidden="true" {...stroke}><rect x="3" y="5" width="18" height="14" rx="3" /><path d="m4 7 8 6 8-6" /></svg>
 );
+
+const ExternalIcon = () => (
+  <svg className="ico" viewBox="0 0 24 24" aria-hidden="true" {...stroke}><path d="M14 5h5v5M19 5l-8 8M11 7H6v11h11v-5" /></svg>
+);
+
+const SERVICE_ICONS = {
+  web: <><rect x="3" y="4" width="18" height="14" rx="2.5" /><path d="M3 9h18M8 21h8" /></>,
+  mobile: <><rect x="7" y="2.5" width="10" height="19" rx="2.5" /><path d="M11 18.5h2" /></>,
+  ai: <><circle cx="6" cy="7" r="2.3" /><circle cx="18" cy="7" r="2.3" /><circle cx="12" cy="17.5" r="2.3" /><path d="M8.2 7h7.6M7.2 9l3.6 6.5M16.8 9l-3.6 6.5" /></>,
+  cloud: <path d="M7 18.5a4.5 4.5 0 0 1-.6-8.96 6 6 0 0 1 11.5 1.5A3.75 3.75 0 0 1 17.5 18.5z" />
+} as const;
+
+/** "What I do": four cards with gently floating icons. */
+export function Services({ data }: { data: Portfolio }) {
+  return (
+    <ul className="services">
+      {data.services.map(s => (
+        <li className="service" key={s.title}>
+          <span className="service-ico"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" {...stroke}>{SERVICE_ICONS[s.icon]}</svg></span>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 /** Day / night switch: the sun spins away and a crescent moon swings in. */
 export function ThemeToggle({ night, onToggle, cls = "btn sm" }: { night: boolean; onToggle: () => void; cls?: string }) {
@@ -80,6 +107,7 @@ export function Timeline({ data, reveal = false }: { data: Portfolio; reveal?: b
           <span className="mono">{j.period}{j.location ? ` · ${j.location}` : ""}</span>
           <h3>{j.role}</h3>
           <p className="at">{j.company}</p>
+          <ExperienceClip job={j} />
           <ul>{j.points.map(p => <li key={p}>{p}</li>)}</ul>
         </li>
       ))}
@@ -90,13 +118,17 @@ export function Timeline({ data, reveal = false }: { data: Portfolio; reveal?: b
 export function ProjectCard({ p }: { p: Project }) {
   return (
     <article className="proj">
-      <ProjectPreview p={p} />
+      {isReal(p.live)
+        ? <a className="pv-link" href={p.live} target="_blank" rel="noopener noreferrer" aria-label={`Open the ${p.name} website`}><ProjectPreview p={p} /></a>
+        : <ProjectPreview p={p} />}
       <span className="mono">{p.when}</span>
       <h3>{p.name}</h3>
       <p>{p.desc}</p>
       <Chips items={p.stack} />
       <div className="link-row">
-        <LinkBtn url={p.live}>Live site</LinkBtn>
+        {isReal(p.live)
+          ? <LinkBtn url={p.live} cls="btn sm live-link">Visit live site <ExternalIcon /></LinkBtn>
+          : <LinkBtn url={p.live}>Live site</LinkBtn>}
         <LinkBtn url={p.github}>GitHub</LinkBtn>
       </div>
     </article>

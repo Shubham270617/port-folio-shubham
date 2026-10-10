@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import gsap from "gsap";
 import type { Portfolio } from "@/data/portfolio";
-import { Background, ContactBlock, LinkBtn, ProjectCard, ResumeBtn, Skills, Stats, ThemeToggle, Timeline } from "./sections";
+import { Background, ContactBlock, LinkBtn, ProjectCard, ResumeBtn, Services, Skills, Stats, ThemeToggle, Timeline } from "./sections";
 
 interface Props {
   data: Portfolio;
@@ -206,6 +206,11 @@ export default function SimpleView({ data, open, reduceMotion, night, onToggleNi
             </div>
           </header>
 
+          <section className="s-section" aria-labelledby="h-do">
+            <header className="reveal"><span className="eyebrow">What I do</span><h2 id="h-do">End to end, web to AI</h2></header>
+            <div className="reveal"><Services data={data} /></div>
+          </section>
+
           <section className="s-section" id="s-experience" aria-labelledby="h-exp">
             <header className="reveal"><span className="eyebrow">Experience</span><h2 id="h-exp">Where I&apos;ve worked</h2></header>
             <div className="s-card sticker reveal"><Timeline data={data} reveal /></div>
@@ -229,6 +234,16 @@ export default function SimpleView({ data, open, reduceMotion, night, onToggleNi
           <section className="s-section" id="s-contact" aria-labelledby="h-contact">
             <header className="reveal"><span className="eyebrow">Contact</span><h2 id="h-contact">Let&apos;s talk</h2></header>
             <div className="s-card sticker reveal s-contact"><ContactBlock data={data} onCopy={onCopy} /></div>
+          </section>
+
+          <section className="s-cta reveal" aria-labelledby="h-cta">
+            <h2 id="h-cta">Have a role or a project in mind?</h2>
+            <p>I&apos;m one email away, and my résumé has the full story.</p>
+            <div className="link-row">
+              <a className="btn" href={`mailto:${data.contact.email}`}>Email me</a>
+              <ResumeBtn data={data} cls="btn" />
+            </div>
+            <div className="cta-boat" aria-hidden="true"><BoatSvg /></div>
           </section>
 
           <footer className="s-foot">© {new Date().getFullYear()} {data.name}. Built with Next.js, React, Three.js and GSAP.</footer>

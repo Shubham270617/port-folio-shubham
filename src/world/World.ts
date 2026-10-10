@@ -565,7 +565,7 @@ export class World {
     this.waterCol = new THREE.BufferAttribute(new Float32Array(this.waterPos.count * 3), 3);
     this.waterCol.setUsage(THREE.DynamicDrawUsage);
     geo.setAttribute("color", this.waterCol);
-    this.water = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }));
+    this.water = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ vertexColors: true, flatShading: true, specular: 0x8f8676, shininess: 48 }));
     this.water.rotation.x = -Math.PI / 2;
     this.water.receiveShadow = true;
     this.waterCell = SIZE / SEG;
@@ -578,7 +578,9 @@ export class World {
       kf: [0, 0, -1.7], kb: [0, 0, 1.7], tf: [0, 1.35, -3.3], tb: [0, 1.35, 3.3],
       l1: [-1.25, 1.1, -1.45], l2: [-1.25, 1.1, 1.45], r1: [1.25, 1.1, -1.45], r2: [1.25, 1.1, 1.45],
       d1: [-1.1, 0.95, -1.4], d2: [-1.1, 0.95, 1.4], d3: [1.1, 0.95, 1.4], d4: [1.1, 0.95, -1.4],
-      sl1: [-0.32, 1.0, -1.5], sl2: [-0.32, 1.0, 1.5], sr1: [0.32, 1.0, -1.5], sr2: [0.32, 1.0, 1.5], peak: [0, 3.6, 0]
+      sl1: [-0.32, 1.0, -1.5], sl2: [-0.32, 1.0, 1.5], sr1: [0.32, 1.0, -1.5], sr2: [0.32, 1.0, 1.5], peak: [0, 3.9, 0],
+      al1: [-1.3, 1.08, -1.47], al2: [-1.3, 1.08, 1.47], bl1: [-0.95, 0.76, -1.56], bl2: [-0.95, 0.76, 1.56],
+      ar1: [1.3, 1.08, -1.47], ar2: [1.3, 1.08, 1.47], br1: [0.95, 0.76, -1.56], br2: [0.95, 0.76, 1.56]
     };
     const tri = (list: string[][]) => {
       const arr: number[] = [];
@@ -596,16 +598,17 @@ export class World {
     const paper = new THREE.MeshLambertMaterial({ color: C.paper, flatShading: true, side: THREE.DoubleSide });
     const trim = new THREE.MeshLambertMaterial({ color: C.accent, flatShading: true, side: THREE.DoubleSide });
     const hull = new THREE.Mesh(paperGeo, paper); hull.castShadow = true;
-    const deck = new THREE.Mesh(tri([["d1", "d2", "d3"], ["d1", "d3", "d4"]]), trim);
+    const deck = new THREE.Mesh(tri([["d1", "d2", "d3"], ["d1", "d3", "d4"]]), new THREE.MeshLambertMaterial({ color: C.sand, flatShading: true, side: THREE.DoubleSide }));
+    const stripes = new THREE.Mesh(tri([["al1", "al2", "bl2"], ["al1", "bl2", "bl1"], ["ar1", "br2", "ar2"], ["ar1", "br1", "br2"]]), trim);
     const edges = new THREE.LineSegments(new THREE.EdgesGeometry(paperGeo, 1), new THREE.LineBasicMaterial({ color: C.ink }));
     // accent trim: a little pennant on the peak
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.5, 5), this.mat(C.ink)); pole.position.set(0, 4.3, 0);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.5, 5), this.mat(C.ink)); pole.position.set(0, 4.6, 0);
     const fg = new THREE.BufferGeometry();
-    fg.setAttribute("position", new THREE.Float32BufferAttribute([0, 5.05, 0, 0, 4.35, 0, 0, 4.7, 1.2], 3));
+    fg.setAttribute("position", new THREE.Float32BufferAttribute([0, 5.35, 0, 0, 4.65, 0, 0, 5.0, 1.2], 3));
     fg.computeVertexNormals();
     this.flag = new THREE.Mesh(fg, trim);
-    this.boatInner.add(hull, deck, edges, pole, this.flag);
-    this.boatInner.scale.setScalar(1.15);
+    this.boatInner.add(hull, deck, stripes, edges, pole, this.flag);
+    this.boatInner.scale.setScalar(1.3);
     this.boatYaw.add(this.boatInner);
     // a lantern on the mast, lit at night
     const boatGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.dot, color: C.glow, transparent: true, opacity: 0, depthWrite: false, fog: false }));
@@ -651,6 +654,25 @@ export class World {
       d.updateMatrix(); rocks.setMatrixAt(i, d.matrix);
     }
     rocks.castShadow = true; g.add(rocks);
+
+    const bushes = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 0), this.mat(C.leafDark), 4);
+    for (let i = 0; i < 4; i++) {
+      const a = Math.random() * Math.PI * 2, rr = r * (0.58 + Math.random() * 0.16), sc = 0.6 + Math.random() * 0.5;
+      d.position.set(Math.cos(a) * rr, GROUND + 0.3, Math.sin(a) * rr);
+      d.rotation.set(0, Math.random() * 3, 0); d.scale.set(sc, sc * 0.75, sc);
+      d.updateMatrix(); bushes.setMatrixAt(i, d.matrix);
+    }
+    bushes.castShadow = true; g.add(bushes);
+    [C.paper, C.glow, C.accent].forEach(col => {
+      const flowers = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.2, 0), this.mat(col), 5);
+      for (let i = 0; i < 5; i++) {
+        const a = Math.random() * Math.PI * 2, rr = r * (0.3 + Math.random() * 0.46);
+        d.position.set(Math.cos(a) * rr, GROUND + 0.16, Math.sin(a) * rr);
+        d.rotation.set(0, 0, 0); d.scale.setScalar(0.7 + Math.random() * 0.7);
+        d.updateMatrix(); flowers.setMatrixAt(i, d.matrix);
+      }
+      g.add(flowers);
+    });
 
     const label = this.label(s.name, 3.1); label.position.set(0, labelY, 0);
     label.material.depthTest = false; label.renderOrder = 10; g.add(label);
@@ -722,7 +744,7 @@ export class World {
   private buildProjects() {
     const s = SECTIONS.find(x => x.id === "projects")!;
     const facing = Math.atan2(-s.z, -s.x);
-    const g = this.addIsland("projects", 10.5, 3, facing, 14);
+    const g = this.addIsland("projects", 10.5, 3, facing, this.P.projects.length > 5 ? 22 : 14);
     // a little jetty pointing at the lanterns
     const jetty = new THREE.Group(); jetty.rotation.y = -facing; g.add(jetty);
     for (let i = 0; i < 5; i++) this.add(jetty, new THREE.BoxGeometry(1.3, 0.3, 3.2), this.mat(i % 2 ? C.sand : C.paper), 4 + i * 1.45, 1.75, 0);
@@ -735,7 +757,8 @@ export class World {
     const body = new THREE.CylinderGeometry(0.85, 0.7, 1.7, 6), cap = new THREE.ConeGeometry(1.15, 0.85, 6), float = new THREE.CylinderGeometry(1.25, 1.05, 0.75, 10);
     const glow = this.glowMat(0.75);
     this.P.projects.forEach((p, i) => {
-      const a = facing + (i - (n - 1) / 2) * Math.min(0.5, 2.2 / Math.max(1, n - 1)), R = 16;
+      // more projects fan out on a wider, longer arc so every lantern has room
+      const a = facing + (i - (n - 1) / 2) * Math.min(0.5, 2.9 / Math.max(1, n - 1)), R = n > 5 ? 19 : 16;
       const x = s.x + Math.cos(a) * R, z = s.z + Math.sin(a) * R;
       const L = new THREE.Group(); L.position.set(x, 0, z);
       this.add(L, float, this.mat(C.accent), 0, 0.15, 0);
@@ -1183,8 +1206,8 @@ export class World {
       if (d < nd) { nd = d; nearest = isl; }
     }
     this.nearest = nearest;
-    let lan = -1;
-    for (const L of this.lanterns) if (Math.hypot(b.x - L.x, b.z - L.z) < 6.5) { lan = L.i; break; }
+    let lan = -1, lanD = 6.5;
+    for (const L of this.lanterns) { const ld = Math.hypot(b.x - L.x, b.z - L.z); if (ld < lanD) { lanD = ld; lan = L.i; } }
 
     if (this.suppressed) {
       const s = this.isl(this.suppressed);
